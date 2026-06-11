@@ -3,6 +3,7 @@ import blankImage from './blank_profile_picture.png'
 import { connectToDatabase } from '@/lib/mongodb'
 import Profile from '@/models/Profile'
 
+export const dynamic = 'force-dynamic'
 export default async function Dashboard() {
   // 1. Connect to your MongoDB cluster
   await connectToDatabase()
