@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import blankImage from './blank_profile_picture.png'
+// import blankImage from './blank_profile_picture.png'
 import { connectToDatabase } from '@/lib/mongodb'
 import Profile from '@/models/Profile'
 
@@ -89,7 +89,7 @@ export default async function Dashboard() {
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-rose-100 .flex-shrink-0 shadow-sm">
                       <img
-                        src={m.imageUrl || blankImage.src}
+                        src={m.imageUrl }
                         alt={`${m.firstName} profile`}
                         className="w-full h-full object-cover"
                       />
