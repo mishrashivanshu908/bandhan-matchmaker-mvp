@@ -1,36 +1,56 @@
-'use client'
+'use client' // Denotes this as a Client Component, allowing the use of React hooks and DOM event listeners
 
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
+/**
+ * LoginPage Component
+ * Renders the secure entry point for the Matchmaker Portal.
+ * Handles client-side form submission, mock authentication, and UI state management (loading/errors).
+ */
 export default function LoginPage() {
+  // Initialize Next.js router for programmatic navigation after a successful login
   const router = useRouter()
+
+  // State to manage the UI feedback during the simulated network request
   const [isLoading, setIsLoading] = useState(false)
+
+  // State to hold and display validation or authentication errors
   const [error, setError] = useState('')
 
+  /**
+   * Intercepts the form submission to handle authentication entirely on the client side.
+   * @param {React.FormEvent<HTMLFormElement>} e - The standard React form event
+   */
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    // Prevent the default browser form submission (which would cause a page reload)
     e.preventDefault()
+
+    // Reset UI states before processing the new login attempt
     setIsLoading(true)
     setError('')
 
-    // Read the values from the form inputs
+    // Utilize the native FormData API for efficient DOM reads without binding inputs to React state
     const formData = new FormData(e.currentTarget)
     const username = formData.get('username') as string
     const password = formData.get('password') as string
 
-    // Validate against assignment credentials
+    // Evaluate credentials against the hardcoded assignment requirements
     if (username === 'admin' && password === 'TDC2026') {
+      // Simulate network latency (1.2 seconds) to demonstrate the loading state and UX transitions
       setTimeout(() => {
         setIsLoading(false)
         toast.success('Authentication successful! Redirecting...')
 
+        // Provide a brief delay before route push so the user can read the success toast
         setTimeout(() => {
           router.push('/dashboard')
         }, 1500)
       }, 1200)
     } else {
+      // Simulate rejection latency (0.8 seconds) for invalid attempts
       setTimeout(() => {
         setIsLoading(false)
         setError('Invalid credentials. Please use admin / TDC2026')
@@ -41,9 +61,10 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 font-sans flex flex-col relative">
-      {/* Navigation Bar */}
+      {/* --- GLOBAL NAVIGATION BAR --- */}
       <nav className="w-full bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          {/* Brand Identity / Logo */}
           <div className="flex items-center space-x-1.5">
             <span className="text-2xl font-bold text-[rgb(230,49,87)] tracking-wide">
               Bandhan
@@ -57,6 +78,8 @@ export default function LoginPage() {
               <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
             </svg>
           </div>
+
+          {/* Return Navigation */}
           <Link
             href="/"
             className="text-slate-500 hover:text-[rgb(230,49,87)] font-medium transition-colors text-sm flex items-center gap-2"
@@ -79,9 +102,10 @@ export default function LoginPage() {
         </div>
       </nav>
 
-      {/* Centered Login Card */}
+      {/* --- CENTERED LOGIN CARD --- */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md p-8 sm:p-10">
+          {/* Header Section */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
               Matchmaker Portal
@@ -91,7 +115,9 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {/* Authentication Form */}
           <form onSubmit={handleLogin} className="space-y-5">
+            {/* Username Input Field */}
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">
                 Username
@@ -99,12 +125,13 @@ export default function LoginPage() {
               <input
                 name="username"
                 type="text"
-                defaultValue="admin"
+                defaultValue="admin" // Prefilled to streamline evaluation
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[rgb(230,49,87)] focus:border-transparent transition-all"
                 required
               />
             </div>
 
+            {/* Password Input Field */}
             <div>
               <div className="flex justify-between mb-1.5">
                 <label className="block text-sm font-semibold text-slate-700">
@@ -120,24 +147,27 @@ export default function LoginPage() {
               <input
                 name="password"
                 type="password"
-                defaultValue="TDC2026"
+                defaultValue="TDC2026" // Prefilled to streamline evaluation
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[rgb(230,49,87)] focus:border-transparent transition-all"
                 required
               />
             </div>
 
+            {/* Dynamic Error Rendering: Only displays if the error state is populated */}
             {error && (
               <p className="text-red-500 text-sm font-medium text-center">
                 {error}
               </p>
             )}
 
+            {/* Form Actions */}
             <div className="pt-4">
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading} // Prevents double-submission by disabling while active
                 className="w-full bg-[rgb(230,49,87)] hover:bg-[rgb(210,35,70)] disabled:bg-rose-300 disabled:cursor-not-allowed text-white py-3.5 rounded-xl font-bold shadow-md hover:shadow-lg transition-all duration-200 text-lg flex justify-center items-center gap-2"
               >
+                {/* Conditionally render a loading spinner or the default text */}
                 {isLoading ? (
                   <>
                     <svg
@@ -168,6 +198,7 @@ export default function LoginPage() {
               </button>
             </div>
 
+            {/* Contextual Helper Text */}
             <div className="mt-6 text-center border-t border-slate-100 pt-6">
               <p className="text-xs text-slate-400">
                 For evaluation purposes. Use <strong>admin</strong> /{' '}

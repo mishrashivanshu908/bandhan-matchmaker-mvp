@@ -22,6 +22,12 @@ const DetailRow = ({
   </div>
 )
 
+// NEW: Helper function to convert raw inches into a readable feet/inches string
+const formatHeight = (inches?: number) => {
+  if (!inches) return 'N/A'
+  return `${Math.floor(inches / 12)}'${inches % 12}"`
+}
+
 export default function ProfileClient({
   currentUser,
   matches,
@@ -40,6 +46,7 @@ export default function ProfileClient({
   const [aiLoading, setAiLoading] = useState(false)
   const [activeMatch, setActiveMatch] = useState<any>(null)
   const [synergyReport, setSynergyReport] = useState('')
+
   // Email Modal States
   const [emailModalOpen, setEmailModalOpen] = useState(false)
   const [emailMatch, setEmailMatch] = useState<any>(null)
@@ -258,6 +265,7 @@ export default function ProfileClient({
         </div>
       )}
       {/* ================= END AI MODAL ================= */}
+
       {/* ================= EMAIL COMPOSER MODAL (PREMIUM UI) ================= */}
       {emailModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4 transition-all duration-300">
@@ -378,16 +386,44 @@ export default function ProfileClient({
       {/* ================= END EMAIL MODAL ================= */}
 
       {/* Navigation Bar */}
-      <nav className="w-full bg-white border-b border-gray-100 shadow-sm px-6 py-4 flex justify-between items-center z-50 flex-shrink-0">
-        <span className="text-2xl font-bold text-[rgb(230,49,87)] tracking-wide">
-          Bandhan
-        </span>
-        <Link
-          href="/dashboard"
-          className="text-slate-500 hover:text-[rgb(230,49,87)] font-medium transition-colors text-sm"
-        >
-          Return to Dashboard
-        </Link>
+      <nav className="w-full bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          {/* Brand Identity / Logo */}
+          <div className="flex items-center space-x-1.5">
+            <span className="text-2xl font-bold text-[rgb(230,49,87)] tracking-wide">
+              Bandhan
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-6 h-6 text-red-500 animate-pulse"
+            >
+              <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+            </svg>
+          </div>
+
+          {/* Return Navigation */}
+          <Link
+            href="/dashboard"
+            className="text-slate-500 hover:text-[rgb(230,49,87)] font-medium transition-colors text-sm flex items-center gap-2"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Return to Dashboard
+          </Link>
+        </div>
       </nav>
 
       {/* Main Content Area */}
@@ -428,7 +464,11 @@ export default function ProfileClient({
                     label="Age / DOB"
                     value={`${currentUser.age} yrs (${currentUser.dateOfBirth ? new Date(currentUser.dateOfBirth).toLocaleDateString() : 'N/A'})`}
                   />
-                  <DetailRow label="Height" value={currentUser.height} />
+                  {/* UPDATED: Applied formatHeight to the main user's details */}
+                  <DetailRow
+                    label="Height"
+                    value={formatHeight(currentUser.height)}
+                  />
                   <DetailRow
                     label="Location"
                     value={`${currentUser.city}, ${currentUser.country}`}
@@ -501,9 +541,12 @@ export default function ProfileClient({
             </div>
 
             <div className="mt-auto flex gap-4 pt-4">
-              <button className="flex-1 bg-white border-2 border-slate-200 text-slate-700 py-3 rounded-xl font-semibold hover:border-slate-300 hover:bg-slate-50 transition-all text-sm shadow-sm">
+              <Link
+                href={`/dashboard/edit/${currentUser.id}`}
+                className="flex-1 flex justify-center items-center bg-white border-2 border-slate-200 text-slate-700 py-3 rounded-xl font-semibold hover:border-slate-300 hover:bg-slate-50 transition-all text-sm shadow-sm"
+              >
                 Edit Profile
-              </button>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-semibold hover:bg-red-50 hover:text-red-600 transition-all text-sm border border-slate-200 shadow-sm"
@@ -624,10 +667,12 @@ export default function ProfileClient({
                                 ? '✓ Lower Income'
                                 : '✕ Higher Income'}
                             </span>
+                            {/* UPDATED: Applied formatHeight to the match comparison badge */}
                             <span
                               className={`px-2.5 py-1 text-xs font-bold rounded-md border ${match.height < currentUser.height ? 'bg-green-50 text-green-700 border-green-200' : 'bg-slate-50 text-slate-600 border-slate-200'}`}
                             >
-                              Shorter ({match.height} vs {currentUser.height})
+                              Shorter ({formatHeight(match.height)} vs{' '}
+                              {formatHeight(currentUser.height)})
                             </span>
                             <span
                               className={`px-2.5 py-1 text-xs font-bold rounded-md border ${match.wantKids === currentUser.wantKids ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}

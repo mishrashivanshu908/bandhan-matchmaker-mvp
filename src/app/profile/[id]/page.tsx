@@ -22,7 +22,7 @@ const calculateMatchScore = (currentUser: any, candidate: any) => {
   if (candidate.openToPets === currentUser.openToPets || candidate.openToPets === 'Yes') score += 10;
 
   // Gender-Specific Logic (60 Points Total)
-  if (currentUser.gender === 'Male') {
+  if (currentUser.gender === 'Male'){
     // Strict penalties if the assignment requirements are NOT met
     if (candidate.age >= currentUser.age) return 0; // Immediate disqualification
     if (candidate.income >= currentUser.income) return 0; // Immediate disqualification
