@@ -4,6 +4,16 @@ import { connectToDatabase } from '@/lib/mongodb'
 import Profile from '@/models/Profile'
 import { deleteProfile } from '@/app/actions/profile'
 
+const calcAge = (dob?: string) => {
+  if (!dob) return 'N/A'
+  const d = new Date(dob)
+  const t = new Date()
+  let a = t.getFullYear() - d.getFullYear()
+  const m = t.getMonth() - d.getMonth()
+  if (m < 0 || (m === 0 && t.getDate() < d.getDate())) a--
+  return a
+}
+
 // Forces Next.js to dynamically render this page on every request instead of statically caching it.
 // This ensures the dashboard always displays the most up-to-date database records.
 export const dynamic = 'force-dynamic'
@@ -77,7 +87,7 @@ export default async function Dashboard() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Selector Hub
+              Bandhan Dashboard
             </h1>
             <p className="text-slate-500 text-sm mt-1">
               Manage matchmaker accounts and access client pools.
@@ -119,7 +129,7 @@ export default async function Dashboard() {
                       <h2 className="text-lg font-bold text-slate-800 leading-tight">
                         {m.firstName} {m.lastName}
                         <span className="ml-2 text-sm font-normal text-slate-400">
-                          {m.age} yrs
+                          {calcAge(m.dateOfBirth)} yrs
                         </span>
                       </h2>
                       <p className="text-sm text-slate-500 mt-0.5">
