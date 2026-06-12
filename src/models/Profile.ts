@@ -7,7 +7,6 @@ const profileSchema = new Schema(
     lastName: { type: String, required: true },
     gender: { type: String },
     dateOfBirth: { type: String },
-    age: { type: Number },
     country: { type: String },
     city: { type: String },
     height: { type: Number },

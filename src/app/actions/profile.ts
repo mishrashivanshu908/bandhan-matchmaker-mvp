@@ -5,59 +5,62 @@ import Profile from '@/models/Profile'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 
+// Calculates exact age based on a birthdate string
+function calculateAge(dobString: string | null): number {
+  console.log('Calculating age from DOB:', dobString) // Debug log to verify input
+  if (!dobString) return 0
+  const dob = new Date(dobString)
+  const today = new Date()
+  let age = today.getFullYear() - dob.getFullYear()
+  const monthDiff = today.getMonth() - dob.getMonth()
+  
+  // If the birthday hasn't happened yet this year, subtract 1
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--
+  }
+  return age
+}
+
 export async function createNewProfile(formData: FormData) {
   await connectToDatabase()
 
-  // 1. Grab the Feet and Inches from the form
-  // Using parseInt ensures they are treated as math numbers, avoiding "NaN" errors
-  const ft = parseInt(formData.get('heightFeet') as string, 10) || 0
-  const inc = parseInt(formData.get('heightInches') as string, 10) || 0
-
-  // 2. Convert to total inches for the database
-  const totalInches = ft * 12 + inc
-
-  // Extract all data
-  const profileData = {
-    imageUrl:
-      formData.get('imageUrl') ||
-      'https://www.shutterstock.com/image-photo/head-shot-portrait-happy-indian-260nw-2619939871.jpg',
+  console.log('Received DOB for new profile:', formData.get('dateOfBirth')) // Debug log to verify input
+  const newProfileData = {
     firstName: formData.get('firstName'),
     lastName: formData.get('lastName'),
-    gender: formData.get('gender'),
+
+    // 👇 Now it calculates age automatically on creation too!
+    age: calculateAge(formData.get('dateOfBirth') as string),
     dateOfBirth: formData.get('dateOfBirth'),
-    age: Number(formData.get('age')),
-    country: formData.get('country'),
+
+    gender: formData.get('gender'),
     city: formData.get('city'),
-
-    // 3. Save the clean integer to the database
-    height: totalInches,
-
+    country: formData.get('country'),
+    religion: formData.get('religion'),
+    designation: formData.get('designation'),
+    height:
+      Number(formData.get('heightFeet')) * 12 +
+      Number(formData.get('heightInches')),
+    maritalStatus: formData.get('maritalStatus'),
     email: formData.get('email'),
     phoneNumber: formData.get('phoneNumber'),
+    languagesKnown: formData.get('languagesKnown'),
+    caste: formData.get('caste'),
+    siblings: Number(formData.get('siblings')),
+    imageUrl: formData.get('imageUrl'),
     undergraduateCollege: formData.get('undergraduateCollege'),
     degree: formData.get('degree'),
-    income: Number(formData.get('income')),
     currentCompany: formData.get('currentCompany'),
-    designation: formData.get('designation'),
-    maritalStatus: formData.get('maritalStatus'),
-    languagesKnown:
-      (formData.get('languagesKnown') as string)
-        ?.split(',')
-        .map((l) => l.trim()) || [],
-    siblings: Number(formData.get('siblings')),
-    caste: formData.get('caste'),
-    religion: formData.get('religion'),
+    income: Number(formData.get('income')),
     diet: formData.get('diet'),
     wantKids: formData.get('wantKids'),
     openToRelocate: formData.get('openToRelocate'),
     openToPets: formData.get('openToPets'),
-    status: formData.get('status'),
+    status: formData.get('status') || 'Searching',
   }
 
-  // Save to MongoDB
-  await Profile.create(profileData)
+  await Profile.create(newProfileData)
 
-  // Refresh the dashboard and redirect
   revalidatePath('/dashboard')
   redirect('/dashboard')
 }
@@ -95,7 +98,9 @@ export async function updateProfile(formData: FormData) {
   await connectToDatabase()
   
   const id = formData.get('profileId') as string
-  
+  const rawDOB = formData.get('dateOfBirth') as string
+  console.log('🚨 DEBUG: What did the form send?', rawDOB)
+  console.log('🚨 DEBUG: Calculated Age:', calculateAge(rawDOB))
   const updatedData = {
     firstName: formData.get('firstName'),
     lastName: formData.get('lastName'),
@@ -124,6 +129,7 @@ export async function updateProfile(formData: FormData) {
     openToPets: formData.get('openToPets'),
     status: formData.get('status'), // Now matchmakers can manually update the status!
   }
+  
 
   await Profile.findByIdAndUpdate(id, updatedData)
   

@@ -106,13 +106,12 @@ export default function NewProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>Age *</label>
+                  <label className={labelClass}>Date of Birth</label>
                   <input
-                    name="age"
-                    type="number"
-                    required
+                    name="dateOfBirth"
+                    type="date"
+                    defaultValue="1992-10-14"
                     className={inputClass}
-                    placeholder="e.g. 34"
                   />
                 </div>
                 <div>
@@ -170,16 +169,6 @@ export default function NewProfilePage() {
             <div>
               <h2 className={sectionTitleClass}>Extended Details & Contact</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <label className={labelClass}>Date of Birth</label>
-                  <input
-                    name="dateOfBirth"
-                    type="date"
-                    defaultValue="1992-10-14"
-                    className={inputClass}
-                  />
-                </div>
-
                 {/* SPLIT HEIGHT INPUTS */}
                 <div>
                   <label className={labelClass}>Height</label>

@@ -28,6 +28,21 @@ const formatHeight = (inches?: number) => {
   return `${Math.floor(inches / 12)}'${inches % 12}"`
 }
 
+// Helper function to calculate exact age live on the screen
+const calculateAge = (dobString?: string) => {
+  if (!dobString) return 'N/A'
+  const dob = new Date(dobString)
+  const today = new Date()
+  let age = today.getFullYear() - dob.getFullYear()
+  const m = today.getMonth() - dob.getMonth()
+  
+  // If they haven't had their birthday yet this year, subtract 1
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--
+  }
+  return age
+}
+
 export default function ProfileClient({
   currentUser,
   matches,
@@ -436,7 +451,7 @@ export default function ProfileClient({
                 <img
                   src={
                     currentUser.imageUrl ||
-                    `https://i.pravatar.cc/300?u=${currentUser.firstName}`
+                    'https://cdn.pixabay.com/photo/2017/06/13/12/53/profile-2398782_960_720.png'
                   }
                   alt={`${currentUser.firstName} profile`}
                   className="w-full h-full object-cover"
@@ -462,7 +477,7 @@ export default function ProfileClient({
                   <DetailRow label="Gender" value={currentUser.gender} />
                   <DetailRow
                     label="Age / DOB"
-                    value={`${currentUser.age} yrs (${currentUser.dateOfBirth ? new Date(currentUser.dateOfBirth).toLocaleDateString() : 'N/A'})`}
+                    value={`${calculateAge(currentUser.dateOfBirth)} yrs (${currentUser.dateOfBirth ? new Date(currentUser.dateOfBirth).toLocaleDateString() : 'N/A'})`}
                   />
                   {/* UPDATED: Applied formatHeight to the main user's details */}
                   <DetailRow
@@ -653,12 +668,14 @@ export default function ProfileClient({
                         {currentUser.gender === 'Male' ? (
                           <>
                             <span
-                              className={`px-2.5 py-1 text-xs font-bold rounded-md border ${match.age < currentUser.age ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}
+                              className={`px-2.5 py-1 text-xs font-bold rounded-md border ${calculateAge(match.dateOfBirth) < calculateAge(currentUser.dateOfBirth) ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}
                             >
-                              {match.age < currentUser.age
+                              {calculateAge(match.dateOfBirth) <
+                              calculateAge(currentUser.dateOfBirth)
                                 ? '✓ Younger'
                                 : '✕ Older'}{' '}
-                              ({match.age} vs {currentUser.age})
+                              ({calculateAge(match.dateOfBirth)} vs{' '}
+                              {calculateAge(currentUser.dateOfBirth)})
                             </span>
                             <span
                               className={`px-2.5 py-1 text-xs font-bold rounded-md border ${match.income < currentUser.income ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}

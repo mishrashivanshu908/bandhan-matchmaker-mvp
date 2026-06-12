@@ -64,6 +64,11 @@ export default function EditProfilePage() {
       </div>
     )
 
+  // 👇 SAFETY FIX: This strips out timezones/stamps so the HTML input accepts it perfectly
+  const formattedDOB = profile.dateOfBirth
+    ? new Date(profile.dateOfBirth).toISOString().split('T')[0]
+    : ''
+
   const inputClass =
     'w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-black font-medium focus:ring-2 focus:ring-[rgb(230,49,87)] focus:border-transparent outline-none transition-all placeholder:text-slate-400 shadow-sm'
   const labelClass = 'block text-sm font-bold text-slate-900 mb-1.5'
@@ -92,7 +97,6 @@ export default function EditProfilePage() {
 
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden p-8">
           <form action={updateProfile} className="space-y-10">
-            {/* Hidden ID field securely passes the target document to the backend */}
             <input type="hidden" name="profileId" value={profile._id} />
 
             {/* SECTION 1: Core Identity */}
@@ -119,16 +123,19 @@ export default function EditProfilePage() {
                     className={inputClass}
                   />
                 </div>
+
+                {/* 👇 The ONLY Date of Birth input on the page */}
                 <div>
-                  <label className={labelClass}>Age *</label>
+                  <label className={labelClass}>Date of Birth *</label>
                   <input
-                    name="age"
-                    type="number"
+                    name="dateOfBirth"
+                    type="date"
                     required
-                    defaultValue={profile.age}
+                    defaultValue={formattedDOB}
                     className={inputClass}
                   />
                 </div>
+
                 <div>
                   <label className={labelClass}>Gender *</label>
                   <select
@@ -188,17 +195,6 @@ export default function EditProfilePage() {
             <div>
               <h2 className={sectionTitleClass}>Extended Details & Contact</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <label className={labelClass}>Date of Birth</label>
-                  <input
-                    name="dateOfBirth"
-                    type="date"
-                    defaultValue={profile.dateOfBirth?.split('T')[0]}
-                    className={inputClass}
-                  />
-                </div>
-
-                {/* SPLIT HEIGHT INPUTS */}
                 <div>
                   <label className={labelClass}>Height</label>
                   <div className="flex gap-3">
@@ -402,7 +398,6 @@ export default function EditProfilePage() {
                   </select>
                 </div>
 
-                {/* NEW: Matchmakers can manually update the client's status here! */}
                 <div className="md:col-span-4 mt-4">
                   <label className={labelClass}>Current Status</label>
                   <select

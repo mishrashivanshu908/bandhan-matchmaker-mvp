@@ -2,6 +2,8 @@ import { connectToDatabase } from '@/lib/mongodb'
 import Profile from '@/models/Profile'
 import ProfileClient from './ProfileClient'
 
+export const dynamic = 'force-dynamic'
+
 // Helper function to safely strip hidden Mongoose/BSON data
 const sanitizeProfile = (doc: any) => {
   const plainObject = JSON.parse(JSON.stringify(doc))
